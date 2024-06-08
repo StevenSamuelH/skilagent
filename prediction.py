@@ -103,6 +103,12 @@ def app():
     best_model = random_search.best_estimator_
 
     y_pred = best_model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    st.write(f"**Mean Squared Error:** {mse}")
+    st.write(f"**R2 Score:** {r2}")
+    st.write(f"**Mean Absolute Error:** {mae}")
 
     st.subheader("📈 Gradient Boosting Model Results")
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -115,24 +121,26 @@ def app():
     ax.legend()
     st.pyplot(fig)
 
-    mse = mean_squared_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
-    mae = mean_absolute_error(y_test, y_pred)
-    st.write(f"**Mean Squared Error:** {mse}")
-    st.write(f"**R2 Score:** {r2}")
-    st.write(f"**Mean Absolute Error:** {mae}")
 
     st.subheader("📅 Future Sales Prediction")
+    # Future Predictions
     future_months = pd.date_range(start=df['Order Date'].max(), periods=12, freq='M').to_period('M').astype(str)
     future_indices = range(len(monthly_sales), len(monthly_sales) + len(future_months))
-    future_month_sin = np.sin(2 * np.pi * (np.arange(1, 13)) / 12)
-    future_month_cos = np.cos(2 * np.pi * (np.arange(1, 13)) / 12)
-    future_data = pd.DataFrame({
-        'Month_sin': future_month_sin,
-        'Month_cos': future_month_cos,
-        'Lag_Sales': [monthly_sales['Sales'].iloc[-1]] * 12
-    })
-    future_sales = best_model.predict(future_data)
+
+    # Initialize future_sales with the last known sales value
+    last_known_sales = monthly_sales['Sales'].iloc[-1]
+    future_sales = [last_known_sales]
+
+    for i in future_indices:
+        month_sin = np.sin(2 * np.pi * (i % 12) / 12)
+        month_cos = np.cos(2 * np.pi * (i % 12) / 12)
+        lagged_sales = future_sales[-1]
+        prediction = best_model.predict([[month_sin, month_cos, lagged_sales, 0, 0, 0]])[0]
+        future_sales.append(prediction)
+
+    # Remove the initial last_known_sales from future_sales
+    future_sales = future_sales[1:]
+
     future_predictions = pd.DataFrame({'Order Month': future_months, 'Predicted Sales': future_sales})
     st.write(future_predictions)
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -143,18 +151,19 @@ def app():
     ax.legend()
     st.pyplot(fig)
 
+
     # High Sales Products
-    st.header("🏆 High Sales Products")
+    st.header("🏆 Top 10 High Sales Products")
     high_sales_products = df.groupby('Product Name')['Sales'].sum().sort_values(ascending=False).head(10)
     st.bar_chart(high_sales_products)
     
     # Profit Margins
-    st.header("💹 Profit Margins")
+    st.header("💹 Top 10 Profit Profit Margins")
     profit_margins = df.groupby('Product Name')['Profit'].sum().sort_values(ascending=False).head(10)
     st.bar_chart(profit_margins)
     
     # High-Value Customers
-    st.header("💎 High-Value Customers")
+    st.header("💎Top 10 High-Value Customers")
     high_value_customers = df.groupby('Customer Name')['Sales'].sum().sort_values(ascending=False).head(10)
     st.bar_chart(high_value_customers)
     
