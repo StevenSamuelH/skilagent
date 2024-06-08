@@ -106,12 +106,12 @@ def app():
 
     st.subheader("📈 Gradient Boosting Model Results")
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(X_train.index, y_train, color='blue', label='Training Data')
-    ax.scatter(X_test.index, y_test, color='green', label='Test Data')
-    ax.plot(X_test.index, y_pred, color='red', linewidth=2, label='Predicted Line')
-    ax.set_xlabel('Months')
-    ax.set_ylabel('Sales')
-    ax.set_title('Monthly Sales Prediction')
+    ax.scatter(range(len(X_train)), y_train, color='blue', label='Training Data')
+    ax.scatter(range(len(X_train), len(X_train) + len(X_test)), y_test, color='green', label='Test Data')
+    ax.plot(range(len(X_train), len(X_train) + len(X_test)), y_pred, color='red', linewidth=2, label='Predicted Line')
+    ax.xlabel('Months')
+    ax.ylabel('Sales')
+    ax.title('Monthly Sales Prediction')
     ax.legend()
     st.pyplot(fig)
 
