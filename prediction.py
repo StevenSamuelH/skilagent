@@ -1,14 +1,14 @@
-# prediction.py
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+import numpy as np
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 def app():
     st.title("Prediction Dashboard")
-    
+
     # Add custom CSS
     st.markdown(
         """
@@ -50,52 +50,89 @@ def app():
     df = st.session_state['dataframe']
     
     # Data Cleaning
+    df.drop_duplicates(inplace=True)
     df['Sales'] = df['Sales'].astype(str).str.replace(',', '').astype(float)
     df['Profit'] = df['Profit'].astype(str).str.replace(',', '').astype(float)
     df['Discount'] = df['Discount'].astype(str).str.replace(',', '').astype(float)
     
-    # Display the data
-    st.subheader("Loaded Data")
-    st.dataframe(df.head())
+    df['Sales'].fillna(df['Sales'].median(), inplace=True)
+    df['Profit'].fillna(df['Profit'].median(), inplace=True)
+    df['Discount'].fillna(df['Discount'].median(), inplace=True)
 
-    # Data Preparation for Machine Learning
+    Q1 = df['Sales'].quantile(0.25)
+    Q3 = df['Sales'].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    df = df[(df['Sales'] >= lower_bound) & (df['Sales'] <= upper_bound)]
+
     df['Order Date'] = pd.to_datetime(df['Order Date'])
     df['Order Month'] = df['Order Date'].dt.to_period('M').astype(str)
-    monthly_sales = df.groupby('Order Month')['Sales'].sum().reset_index()
+    df['Month'] = df['Order Date'].dt.month
+    df['Month_sin'] = np.sin(2 * np.pi * df['Month'] / 12)
+    df['Month_cos'] = np.cos(2 * np.pi * df['Month'] / 12)
 
-    # Splitting the data into training and test sets
-    X = monthly_sales.index.values.reshape(-1, 1)
-    y = monthly_sales['Sales'].values
+    # Aggregate sales data by month
+    monthly_sales = df.groupby('Order Month').agg({
+        'Sales': 'sum',
+        'Discount': 'mean',
+        'Profit': 'sum',
+        'Month_sin': 'first',
+        'Month_cos': 'first'
+    }).reset_index()
+
+    monthly_sales['Lag_Sales'] = monthly_sales['Sales'].shift(1).fillna(0)
+    X = monthly_sales[['Month_sin', 'Month_cos', 'Lag_Sales']]
+    y = monthly_sales['Sales']
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Training the Linear Regression model
-    model = LinearRegression()
-    model.fit(X_train, y_train)
+    # Parameter tuning for Gradient Boosting Regressor
+    param_dist = {
+        'n_estimators': [100, 200, 300],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'max_depth': [3, 4, 5],
+        'subsample': [0.8, 0.9, 1.0],
+        'min_samples_split': [2, 3, 4]
+    }
 
-    # Making predictions
-    y_pred = model.predict(X_test)
+    model = GradientBoostingRegressor(random_state=42)
+    random_search = RandomizedSearchCV(model, param_distributions=param_dist, n_iter=50, cv=3, random_state=42, n_jobs=-1)
+    random_search.fit(X_train, y_train)
 
-    # Displaying the results
-    st.subheader("📈 Linear Regression Model Results")
+    best_model = random_search.best_estimator_
+
+    y_pred = best_model.predict(X_test)
+
+    st.subheader("📈 Gradient Boosting Model Results")
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(X_train, y_train, color='blue', label='Training Data')
-    ax.scatter(X_test, y_test, color='green', label='Test Data')
-    ax.plot(X_test, y_pred, color='red', linewidth=2, label='Predicted Line')
+    ax.scatter(X_train.index, y_train, color='blue', label='Training Data')
+    ax.scatter(X_test.index, y_test, color='green', label='Test Data')
+    ax.plot(X_test.index, y_pred, color='red', linewidth=2, label='Predicted Line')
     ax.set_xlabel('Months')
     ax.set_ylabel('Sales')
     ax.set_title('Monthly Sales Prediction')
     ax.legend()
     st.pyplot(fig)
 
-    # Model Evaluation
     mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
     st.write(f"**Mean Squared Error:** {mse}")
+    st.write(f"**R2 Score:** {r2}")
+    st.write(f"**Mean Absolute Error:** {mae}")
 
-    # Future Predictions
     st.subheader("📅 Future Sales Prediction")
     future_months = pd.date_range(start=df['Order Date'].max(), periods=12, freq='M').to_period('M').astype(str)
     future_indices = range(len(monthly_sales), len(monthly_sales) + len(future_months))
-    future_sales = model.predict([[i] for i in future_indices])
+    future_month_sin = np.sin(2 * np.pi * (np.arange(1, 13)) / 12)
+    future_month_cos = np.cos(2 * np.pi * (np.arange(1, 13)) / 12)
+    future_data = pd.DataFrame({
+        'Month_sin': future_month_sin,
+        'Month_cos': future_month_cos,
+        'Lag_Sales': [monthly_sales['Sales'].iloc[-1]] * 12
+    })
+    future_sales = best_model.predict(future_data)
     future_predictions = pd.DataFrame({'Order Month': future_months, 'Predicted Sales': future_sales})
     st.write(future_predictions)
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -160,6 +197,10 @@ def app():
     ax.set_xlabel('Sales')
     ax.set_ylabel('Profit')
     st.pyplot(fig)
+
+if __name__ == '__main__':
+    app()
+
 
 if __name__ == '__main__':
     app()
