@@ -7,7 +7,7 @@ credentials = {
 }
 
 def app():
-    st.title('Welcome to :blue[UMKMAI]')
+    st.title('Welcome to :blue[BizTrack]')
 
     if 'username' not in st.session_state:
         st.session_state.username = ''
