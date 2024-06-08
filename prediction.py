@@ -155,16 +155,20 @@ def app():
     # High Sales Products
     st.header("🏆 Top 10 High Sales Products")
     high_sales_products = df.groupby('Product Name')['Sales'].sum().sort_values(ascending=False).head(10)
+    # Sorting to ensure the bar chart is in descending order
+    high_sales_products = high_sales_products.sort_values(ascending=False)
     st.bar_chart(high_sales_products)
     
     # Profit Margins
     st.header("💹 Top 10 Profit Profit Margins")
     profit_margins = df.groupby('Product Name')['Profit'].sum().sort_values(ascending=False).head(10)
+    profit_margins = profit_margins.sort_values(ascending=False)
     st.bar_chart(profit_margins)
     
     # High-Value Customers
     st.header("💎Top 10 High-Value Customers")
     high_value_customers = df.groupby('Customer Name')['Sales'].sum().sort_values(ascending=False).head(10)
+    high_value_customers = high_value_customers.sort_values(ascending=False)
     st.bar_chart(high_value_customers)
     
     # Discount Impact on Profit
