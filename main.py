@@ -5,7 +5,7 @@ import os
 import dashboard, account, prediction, chatbot, about, data_input
 
 st.set_page_config(
-    page_title="BIZTRACK",
+    page_title="BizTrack",
 )
 
 st.markdown(
@@ -36,7 +36,7 @@ class MultiApp:
     def run(self):
         with st.sidebar:
             selected_option = option_menu(
-                menu_title='BIZTRACK',
+                menu_title='BizTrack',
                 options=['Account', 'Google Sheet Link', 'Dashboard', 'Prediction', 'Chatbot', 'About'],
                 icons=['person-circle', 'bar-chart-fill', 'bi bi-table','bi bi-graph-up', 'chat-fill', 'info-circle-fill'],
                 menu_icon='bi bi-robot',
