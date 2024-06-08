@@ -154,12 +154,12 @@ def app():
 
     # High Sales Products
     def create_bar_chart(data, title, xlabel, ylabel):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    data.plot(kind='bar', ax=ax, color='purple')
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_title(title)
-    st.pyplot(fig)
+            fig, ax = plt.subplots(figsize=(10, 6))
+            data.plot(kind='bar', ax=ax, color='purple')
+            ax.set_xlabel(xlabel)
+            ax.set_ylabel(ylabel)
+            ax.set_title(title)
+            st.pyplot(fig)
 
 # Top 10 High Sales Products
     st.header("🏆 Top 10 High Sales Products")
