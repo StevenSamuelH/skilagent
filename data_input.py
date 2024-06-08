@@ -38,6 +38,8 @@ def app():
             # Convert columns to appropriate data types
             df['Order Date'] = pd.to_datetime(df['Order Date'], errors='coerce')
             df['Ship Date'] = pd.to_datetime(df['Ship Date'], errors='coerce')
+            df['Sales'] = pd.to_numeric(df['Sales'], errors='coerce')
+            df['Profit'] = pd.to_numeric(df['Profit'], errors='coerce')
             # df = df.dropna(subset=['Order Date', 'Ship Date'])
             # df['Order ID'] = df['Order ID'].astype(str)
             df['year'] = df['Order Date'].dt.year
