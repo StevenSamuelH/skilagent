@@ -189,33 +189,14 @@ def app():
     # Shipping Efficiency
     st.header("🚚 Shipping Efficiency")
     shipping_efficiency = df.groupby('Ship Mode')['Profit'].sum().reset_index()
+# Plotting with matplotlib using plt syntax
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.bar(shipping_efficiency['Ship Mode'], shipping_efficiency['Profit'], color='skyblue')
-    ax.set_title('Shipping Mode Efficiency')
-    ax.set_xlabel('Ship Mode')
-    ax.set_ylabel('Profit')
+    plt.bar(shipping_efficiency['Ship Mode'], shipping_efficiency['Profit'], color='skyblue')
+    plt.title('Shipping Mode Efficiency')
+    plt.xlabel('Ship Mode')
+    plt.ylabel('Profit')
     st.pyplot(fig)
     
-    # Credit Risk Analysis
-    st.header("⚠️ Credit Risk Analysis")
-    credit_risk_df = df.groupby('Customer Name').agg({
-        'Sales': 'sum',
-        'Profit': 'sum',
-        'Discount': 'mean'
-    }).reset_index()
-    
-    # Identify high-risk customers
-    high_risk_customers = credit_risk_df[(credit_risk_df['Profit'] < 0) & (credit_risk_df['Discount'] > 0.2)]
-    st.subheader("High-Risk Customers")
-    st.write(high_risk_customers)
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(high_risk_customers['Sales'], high_risk_customers['Profit'], color='red')
-    ax.set_title('High-Risk Customers: Sales vs. Profit')
-    ax.set_xlabel('Sales')
-    ax.set_ylabel('Profit')
-    st.pyplot(fig)
-
 
 if __name__ == '__main__':
     app()
