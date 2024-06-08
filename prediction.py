@@ -77,27 +77,27 @@ def app():
         'Sales': 'sum',
         'Discount': 'mean',
         'Profit': 'sum',
+        'Quantity': 'sum',
         'Month_sin': 'first',
         'Month_cos': 'first'
     }).reset_index()
 
     monthly_sales['Lag_Sales'] = monthly_sales['Sales'].shift(1).fillna(0)
-    X = monthly_sales[['Month_sin', 'Month_cos', 'Lag_Sales']]
-    y = monthly_sales['Sales']
+    X = monthly_sales[['Month_sin', 'Month_cos', 'Lagged_Sales', 'Discount', 'Profit', 'Quantity']].values
+    y = monthly_sales['Sales'].values
+
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Parameter tuning for Gradient Boosting Regressor
     param_dist = {
-        'n_estimators': [100, 200, 300],
-        'learning_rate': [0.01, 0.1, 0.2],
-        'max_depth': [3, 4, 5],
-        'subsample': [0.8, 0.9, 1.0],
-        'min_samples_split': [2, 3, 4]
+    'n_estimators': [100, 200, 300],
+    'learning_rate': [0.01, 0.1, 0.2],
+    'max_depth': [3, 4, 5],
+    'min_samples_split': [2, 5, 10]
     }
 
-    model = GradientBoostingRegressor(random_state=42)
-    random_search = RandomizedSearchCV(model, param_distributions=param_dist, n_iter=50, cv=3, random_state=42, n_jobs=-1)
+    random_search = RandomizedSearchCV(GradientBoostingRegressor(random_state=42), param_distributions=param_dist, n_iter=50, cv=5, scoring='r2', random_state=42)
     random_search.fit(X_train, y_train)
 
     best_model = random_search.best_estimator_
