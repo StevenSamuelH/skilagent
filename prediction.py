@@ -153,24 +153,29 @@ def app():
 
 
     # High Sales Products
+    def create_bar_chart(data, title, xlabel, ylabel):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    data.plot(kind='bar', ax=ax, color='purple')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    st.pyplot(fig)
+
+# Top 10 High Sales Products
     st.header("🏆 Top 10 High Sales Products")
     high_sales_products = df.groupby('Product Name')['Sales'].sum().sort_values(ascending=False).head(10)
-    # Sorting to ensure the bar chart is in descending order
-    high_sales_products = high_sales_products.sort_values(ascending=False)
-    st.bar_chart(high_sales_products)
+    create_bar_chart(high_sales_products, 'Top 10 High Sales Products', 'Product Name', 'Sales')
     
-    # Profit Margins
-    st.header("💹 Top 10 Profit Profit Margins")
+    # Top 10 Profit Margins
+    st.header("💹 Top 10 Profit Margins")
     profit_margins = df.groupby('Product Name')['Profit'].sum().sort_values(ascending=False).head(10)
-    profit_margins = profit_margins.sort_values(ascending=False)
-    st.bar_chart(profit_margins)
+    create_bar_chart(profit_margins, 'Top 10 Profit Margins', 'Product Name', 'Profit')
     
-    # High-Value Customers
-    st.header("💎Top 10 High-Value Customers")
+    # Top 10 High-Value Customers
+    st.header("💎 Top 10 High-Value Customers")
     high_value_customers = df.groupby('Customer Name')['Sales'].sum().sort_values(ascending=False).head(10)
-    high_value_customers = high_value_customers.sort_values(ascending=False)
-    st.bar_chart(high_value_customers)
-    
+    create_bar_chart(high_value_customers, 'Top 10 High-Value Customers', 'Customer Name', 'Sales')
+        
     # Discount Impact on Profit
     st.header("🔍 Discount Impact on Profit")
     discount_profit = df.groupby('Discount')['Profit'].sum().reset_index()
