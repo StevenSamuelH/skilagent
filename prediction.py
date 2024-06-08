@@ -111,7 +111,7 @@ def app():
     ax.plot(range(len(X_train), len(X_train) + len(X_test)), y_pred, color='red', linewidth=2, label='Predicted Line')
     ax.set_xlabel('Months')
     ax.set_ylabel('Sales')
-    ax.title('Monthly Sales Prediction')
+    ax.set_title('Monthly Sales Prediction')
     ax.legend()
     st.pyplot(fig)
 
