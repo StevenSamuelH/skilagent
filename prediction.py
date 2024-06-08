@@ -82,7 +82,7 @@ def app():
         'Month_cos': 'first'
     }).reset_index()
 
-    monthly_sales['Lag_Sales'] = monthly_sales['Sales'].shift(1).fillna(0)
+    monthly_sales['Lagged_Sales'] = monthly_sales['Sales'].shift(1).fillna(0)
     X = monthly_sales[['Month_sin', 'Month_cos', 'Lagged_Sales', 'Discount', 'Profit', 'Quantity']].values
     y = monthly_sales['Sales'].values
 
@@ -197,9 +197,6 @@ def app():
     ax.set_xlabel('Sales')
     ax.set_ylabel('Profit')
     st.pyplot(fig)
-
-if __name__ == '__main__':
-    app()
 
 
 if __name__ == '__main__':
