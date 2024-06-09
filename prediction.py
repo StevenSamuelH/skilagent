@@ -52,8 +52,6 @@ def app():
     
     df = st.session_state['dataframe']
 
-    df = load_data()
-
     # Data Cleaning
     df.drop_duplicates(inplace=True)
     df['Sales'] = df['Sales'].astype(str).str.replace(',', '').astype(float)
