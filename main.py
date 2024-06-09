@@ -64,7 +64,7 @@ class MultiApp:
         elif selected_option == 'Chatbot':
             chatbot.app()
         elif selected_option == 'About':
-            about.app()z
+            about.app()
 
 if __name__ == "__main__":
     app = MultiApp()
