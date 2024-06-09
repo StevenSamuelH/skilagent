@@ -6,6 +6,21 @@ import chardet
 
 def app():
     st.title("Google Sheet Link Input")
+
+    
+    google_sheet_url = "https://docs.google.com/spreadsheets/d/1IEJcMZUZ4ciQYyq7nxN19qAF834uYD_l-zkRPBucGZ4/edit?usp=sharing"
+
+    st.markdown(f"""
+    Salin dan tempelkan tautan Google Sheet berikut untuk mengakses data:
+    
+    [{google_sheet_url}]({google_sheet_url})
+    
+    Data input merupakan data dengan kolom spesifik
+    """)
+
+    if st.button("Salin Tautan"):
+        st.write(f"Tautan telah disalin: {google_sheet_url}")
+        st.clipboard(google_sheet_url)
     
     google_sheet_url = st.text_input("Enter Google Sheet link:")
     
