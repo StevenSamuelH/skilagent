@@ -3,7 +3,7 @@ import streamlit as st
 # Replace this with the actual credentials or mechanism to fetch from Google Sheets
 credentials = {
     "stevensamuell177@gmail.com": "AlongAlong",
-    "steven43@gmail.com": "Kelompok43"
+    "kelompok43@gmail.com": "Kelompok43"
 }
 
 def app():
