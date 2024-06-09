@@ -3,9 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
+# Install XGBoost
+import sys
+!{sys.executable} -m pip install xgboost
+
+# Import XGBoost
+from xgboost import XGBRegressor
 
 def app():
     st.title("Prediction Dashboard")
