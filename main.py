@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import os
 
-import dashboard, account, prediction, chatbot, about, data_input
+import dashboard, account, prediction, chatbot, about, watson, data_input
 
 st.set_page_config(
     page_title="BizTrack",
@@ -36,9 +36,9 @@ class MultiApp:
     def run(self):
         with st.sidebar:
             selected_option = option_menu(
-                menu_title='BizTrack',
-                options=['Account', 'Google Sheet Link', 'Dashboard', 'Prediction', 'Chatbot', 'About'],
-                icons=['person-circle', 'bar-chart-fill', 'bi bi-table','bi bi-graph-up', 'chat-fill', 'info-circle-fill'],
+                menu_title='UMKMAI',
+                options=['Account', 'Google Sheet Link', 'Dashboard', 'Prediction', 'Prediction with IBM Watson','Chatbot', 'About'],
+                icons=['person-circle', 'bar-chart-fill', 'bi bi-table','bi bi-graph-up','bi bi-cloud', 'chat-fill', 'info-circle-fill'],
                 menu_icon='bi bi-robot',
                 default_index=0,
                 styles={
@@ -59,11 +59,12 @@ class MultiApp:
             dashboard.app()
         elif selected_option == "Prediction":
             prediction.app()
+        elif selected_option == "Prediction with IBM Watson":
+            watson.app()
         elif selected_option == 'Chatbot':
             chatbot.app()
         elif selected_option == 'About':
-            about.app()
-
+            about.app()z
 
 if __name__ == "__main__":
     app = MultiApp()
