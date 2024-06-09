@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 def app():
     st.title("Prediction Dashboard")
@@ -89,19 +91,24 @@ def app():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Parameter tuning for Gradient Boosting Regressor
-    param_grid = {
-        'n_estimators': [100, 200, 300, 400, 500],
-        'learning_rate': [0.01, 0.05, 0.1, 0.2],
-        'max_depth': [3, 4, 5, 6],
+    param_dist = {
+        'n_estimators': [100, 200, 300],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'max_depth': [3, 4, 5],
         'min_samples_split': [2, 5, 10],
         'min_samples_leaf': [1, 2, 4],
         'subsample': [0.8, 0.9, 1.0]
     }
 
-    grid_search = GridSearchCV(GradientBoostingRegressor(random_state=42), param_grid, cv=5, scoring='r2', n_jobs=-1)
-    grid_search.fit(X_train, y_train)
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('gbr', GradientBoostingRegressor(random_state=42))
+    ])
 
-    best_model = grid_search.best_estimator_
+    random_search = RandomizedSearchCV(pipeline, param_distributions=param_dist, n_iter=50, cv=5, scoring='r2', random_state=42)
+    random_search.fit(X_train, y_train)
+
+    best_model = random_search.best_estimator_
 
     y_pred = best_model.predict(X_test)
     mse = mean_squared_error(y_test, y_pred)
