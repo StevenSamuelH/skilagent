@@ -7,7 +7,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 def app():
-    st.title("Prediction Dashboard")
+
 
     # Add custom CSS
     st.markdown(
