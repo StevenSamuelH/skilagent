@@ -20,7 +20,7 @@ def app():
 
     if st.button("Salin Tautan"):
         st.write(f"Tautan telah disalin: {google_sheet_url}")
-        st.clipboard(google_sheet_url)
+    
     
     google_sheet_url = st.text_input("Enter Google Sheet link:")
     
@@ -65,3 +65,8 @@ def app():
         except Exception as e:
             st.error(f"Error loading data: {e}")
             st.error("Please ensure the Google Sheet link is correct and the data is formatted as a CSV.")
+            
+if __name__ == "__main__":
+    app = MultiApp()
+    app.run()
+    st.clipboard(google_sheet_url)
