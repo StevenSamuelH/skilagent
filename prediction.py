@@ -98,7 +98,11 @@ def app():
     }
 
     random_search = RandomizedSearchCV(GradientBoostingRegressor(random_state=42), param_distributions=param_dist, n_iter=50, cv=5, scoring='r2', random_state=42)
-    random_search.fit(X_train, y_train)
+
+    
+    with st.spinner('Sedang melatih model...'):
+        random_search.fit(X_train, y_train)
+
 
     best_model = random_search.best_estimator_
 
