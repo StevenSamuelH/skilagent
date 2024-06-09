@@ -36,7 +36,7 @@ class MultiApp:
     def run(self):
         with st.sidebar:
             selected_option = option_menu(
-                menu_title='UMKMAI',
+                menu_title='BizTrack',
                 options=['Account', 'Google Sheet Link', 'Dashboard', 'Prediction', 'Prediction with IBM Watson','Chatbot', 'About'],
                 icons=['person-circle', 'bar-chart-fill', 'bi bi-table','bi bi-graph-up','bi bi-cloud', 'chat-fill', 'info-circle-fill'],
                 menu_icon='bi bi-robot',
