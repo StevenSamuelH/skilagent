@@ -5,8 +5,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
 
 def app():
     st.title("Prediction Dashboard")
@@ -88,24 +86,18 @@ def app():
     X = monthly_sales[['Month_sin', 'Month_cos', 'Lagged_Sales', 'Discount', 'Profit', 'Quantity']].values
     y = monthly_sales['Sales'].values
 
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Parameter tuning for Gradient Boosting Regressor
     param_dist = {
-        'n_estimators': [100, 200, 300],
-        'learning_rate': [0.01, 0.1, 0.2],
-        'max_depth': [3, 4, 5],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
-        'subsample': [0.8, 0.9, 1.0]
+    'n_estimators': [100, 200, 300],
+    'learning_rate': [0.01, 0.1, 0.2],
+    'max_depth': [3, 4, 5],
+    'min_samples_split': [2, 5, 10]
     }
 
-    pipeline = Pipeline([
-        ('scaler', StandardScaler()),
-        ('gbr', GradientBoostingRegressor(random_state=42))
-    ])
-
-    random_search = RandomizedSearchCV(pipeline, param_distributions=param_dist, n_iter=50, cv=5, scoring='r2', random_state=42)
+    random_search = RandomizedSearchCV(GradientBoostingRegressor(random_state=42), param_distributions=param_dist, n_iter=50, cv=5, scoring='r2', random_state=42)
     random_search.fit(X_train, y_train)
 
     best_model = random_search.best_estimator_
@@ -128,6 +120,7 @@ def app():
     ax.set_title('Monthly Sales Prediction')
     ax.legend()
     st.pyplot(fig)
+
 
     st.subheader("📅 Future Sales Prediction")
     # Future Predictions
@@ -158,16 +151,17 @@ def app():
     ax.legend()
     st.pyplot(fig)
 
+
     # High Sales Products
     def create_bar_chart(data, title, xlabel, ylabel):
-        fig, ax = plt.subplots(figsize=(10, 6))
-        data.plot(kind='bar', ax=ax, color='purple')
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel)
-        ax.set_title(title)
-        st.pyplot(fig)
+            fig, ax = plt.subplots(figsize=(10, 6))
+            data.plot(kind='bar', ax=ax, color='purple')
+            ax.set_xlabel(xlabel)
+            ax.set_ylabel(ylabel)
+            ax.set_title(title)
+            st.pyplot(fig)
 
-    # Top 10 High Sales Products
+# Top 10 High Sales Products
     st.header("🏆 Top 10 High Sales Products")
     high_sales_products = df.groupby('Product Name')['Sales'].sum().sort_values(ascending=False).head(10)
     create_bar_chart(high_sales_products, 'Top 10 High Sales Products', 'Product Name', 'Sales')
@@ -195,12 +189,14 @@ def app():
     # Shipping Efficiency
     st.header("🚚 Shipping Efficiency")
     shipping_efficiency = df.groupby('Ship Mode')['Profit'].sum().reset_index()
+# Plotting with matplotlib using plt syntax
     fig, ax = plt.subplots(figsize=(10, 6))
     plt.bar(shipping_efficiency['Ship Mode'], shipping_efficiency['Profit'], color='skyblue')
     plt.title('Shipping Mode Efficiency')
     plt.xlabel('Ship Mode')
     plt.ylabel('Profit')
     st.pyplot(fig)
+    
 
 if __name__ == '__main__':
     app()
