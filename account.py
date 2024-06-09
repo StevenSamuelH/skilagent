@@ -6,10 +6,11 @@ credentials = {
     "kelompok43@gmail.com": "Kelompok43"
 }
 
-st.warning("Please login with username: kelompok43@gmail.com and password: Kelompok43. Authentication is still hardcoded due to cloud traffic.")
+
 
 def app():
     st.title('Welcome to :blue[BizTrack]')
+    st.warning("Please login with username: kelompok43@gmail.com and password: Kelompok43. Authentication is still hardcoded due to cloud traffic.")
      
     if 'username' not in st.session_state:
         st.session_state.username = ''
