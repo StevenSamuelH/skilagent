@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 def app():
@@ -91,14 +91,16 @@ def app():
 
     # Parameter tuning for Gradient Boosting Regressor
     param_dist = {
-    'n_estimators': [100, 200, 300],
-    'learning_rate': [0.01, 0.1, 0.2],
-    'max_depth': [3, 4, 5],
-    'min_samples_split': [2, 5, 10]
+        'n_estimators': [100, 200, 300, 400],
+        'learning_rate': [0.01, 0.05, 0.1, 0.2],
+        'max_depth': [3, 4, 5, 6],
+        'min_samples_split': [2, 5, 10, 15],
+        'min_samples_leaf': [1, 2, 4]
     }
 
-    random_search = RandomizedSearchCV(GradientBoostingRegressor(random_state=42), param_distributions=param_dist, n_iter=50, cv=5, scoring='r2', random_state=42)
-    random_search.fit(X_train, y_train)
+    with st.spinner('Training the model, please wait...'):
+        random_search = RandomizedSearchCV(GradientBoostingRegressor(random_state=42), param_distributions=param_dist, n_iter=100, cv=5, scoring='r2', random_state=42, n_jobs=-1)
+        random_search.fit(X_train, y_train)
 
     best_model = random_search.best_estimator_
 
@@ -120,7 +122,6 @@ def app():
     ax.set_title('Monthly Sales Prediction')
     ax.legend()
     st.pyplot(fig)
-
 
     st.subheader("📅 Future Sales Prediction")
     # Future Predictions
@@ -161,7 +162,7 @@ def app():
             ax.set_title(title)
             st.pyplot(fig)
 
-# Top 10 High Sales Products
+    # Top 10 High Sales Products
     st.header("🏆 Top 10 High Sales Products")
     high_sales_products = df.groupby('Product Name')['Sales'].sum().sort_values(ascending=False).head(10)
     create_bar_chart(high_sales_products, 'Top 10 High Sales Products', 'Product Name', 'Sales')
@@ -189,7 +190,7 @@ def app():
     # Shipping Efficiency
     st.header("🚚 Shipping Efficiency")
     shipping_efficiency = df.groupby('Ship Mode')['Profit'].sum().reset_index()
-# Plotting with matplotlib using plt syntax
+    # Plotting with matplotlib using plt syntax
     fig, ax = plt.subplots(figsize=(10, 6))
     plt.bar(shipping_efficiency['Ship Mode'], shipping_efficiency['Profit'], color='skyblue')
     plt.title('Shipping Mode Efficiency')
