@@ -45,13 +45,11 @@ def app():
     if 'data' not in st.session_state:
         st.session_state.data = []
 
-    # Display the data
-    st.subheader("Loaded Data")
+  
     if st.session_state.data:
         df = pd.DataFrame(st.session_state.data, columns=["Day", "Month", "Year", "Revenue", "Cost", "Profit", "Profit %"])
         st.dataframe(df)
-    else:
-        st.write("No data available.") 
+    
 
     # Prediksi kategori profit dengan model dari IBM Watson
     st.header("🔮 Prediction of Profit Category UMKMAI with IBM Watson ML")
