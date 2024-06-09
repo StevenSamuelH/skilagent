@@ -12,3 +12,4 @@ xlrd
 google-generativeai
 scikit-learn
 chardet
+xgboost
