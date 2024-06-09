@@ -12,11 +12,45 @@ from xgboost import XGBRegressor
 def app():
     st.title("Prediction Dashboard")
 
-    # Load data
-    @st.cache(allow_output_mutation=True)
-    def load_data():
-        df = pd.read_csv('your_data.csv')  # Update with your data file
-        return df
+    # Add custom CSS
+    st.markdown(
+        """
+        <style>
+        .main {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .stButton button {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px;
+        }
+        .stDataFrame {
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .stMarkdown {
+            background-color: #333333;
+            padding: 10px;
+            border-radius: 10px;
+            color: #ffffff;
+        }
+        h1, h2, h3, h4, h5, h6, .stText {
+            color: #ffffff;
+        }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+
+    st.title("📊 Prediction Dashboard with Machine Learning")
+
+    if 'dataframe' not in st.session_state:
+        st.warning("Please load the data through the 'Google Sheet Link' menu first.")
+        return
+    
+    df = st.session_state['dataframe']
 
     df = load_data()
 
