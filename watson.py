@@ -5,6 +5,13 @@ from millify import millify
 from streamlit_extras.metric_cards import style_metric_cards
 import plotly.graph_objects as go
 import altair as alt
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import requests
+import json
+import plotly.graph_objects as go
 
 def app():
   # Konfigurasi IBM Watson API
